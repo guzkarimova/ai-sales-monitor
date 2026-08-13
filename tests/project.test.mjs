@@ -28,3 +28,15 @@ test('demo data and CRM controls are present', async () => {
   }
 });
 
+test('corporate workflow documentation is complete', async () => {
+  const [architecture, workflows, operations] = await Promise.all([
+    read('docs/architecture.md'),
+    read('docs/workflows.md'),
+    read('docs/operations.md')
+  ]);
+  for (const name of ['Incoming Lead', 'CRM Demo API', 'Manager Reply', 'SLA Monitor', 'Critical Alerts', 'Daily Director Report']) {
+    assert.match(workflows, new RegExp(name));
+  }
+  assert.match(architecture, /ожидание > 30 минут/);
+  assert.match(operations, /Production checklist/);
+});
