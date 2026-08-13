@@ -1,0 +1,393 @@
+{
+  "name": "AI Sales Monitor — Incoming Lead",
+  "nodes": [
+    {
+      "id": "d7e65ee2-cf9b-4468-a3f8-bdc9e7b563cb",
+      "name": "Demo Client Message",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        160,
+        300
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "1cfbed14-a3d0-474b-984e-b43c9a2c58f2",
+      "name": "Create or Find Mock Bitrix Deal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const input=$('Telegram Client Message').first().json.message||$('Telegram Client Message').first().json; const text=String(input.text||'').trim(); const uid=input.from?.id||000000000; const existing=$input.first()?.json||{}; const hasExisting=Boolean(existing.deal_id); const normalized=text.toLowerCase().replace(/[!?.,;:()[\\]{}]/g,' ').replace(/\\s+/g,' ').trim(); const reaction=/^(спасибо|благодарю|хорошо|ок|окей|понял|поняла|жду|буду ждать|договорились|👍|🙏|спс)( вам| вас)?$/i.test(normalized); const hasNewInfo=/\\?|\\b(сколько|стоим|цен|кп|договор|встреч|можно|как|когда|нужн|хотим|готов|интерес|автоматизац)\\b/i.test(normalized); const isSimpleReaction=reaction&&!hasNewInfo; const now=new Date().toISOString(); const comm={communication_id:'COMM-'+(input.message_id||Date.now()),sender:'client',channel:'telegram',telegram_message_id:input.message_id||null,timestamp:now,text}; let communications=[]; let events=[]; try{communications=existing.communications_json?JSON.parse(existing.communications_json):[]}catch(e){} try{events=existing.events_json?JSON.parse(existing.events_json):[]}catch(e){} communications.push(comm); if(hasExisting){const hot=/стоим|цен|КП|готовы|встреч|договор|сколько/i.test(text); return {json:{...existing,telegram_user_id:String(uid),client_chat_id:String(input.chat?.id||uid),client_name:existing.client_name||input.from?.first_name||'Клиент',deal_id:existing.deal_id,chat_id:input.chat?.id||uid,message_text:text,communications,events:[...events,{event_id:'EVENT-'+Date.now(),event_type:isSimpleReaction?'client_reaction':'client_message',deal_id:existing.deal_id,timestamp:now}],last_client_message_at:now,lead_temperature:hot?'hot':existing.lead_temperature,risk_score:hot?Math.max(Number(existing.risk_score)||0,45):existing.risk_score,follow_up_required:isSimpleReaction?existing.follow_up_required:true,sla_status:existing.sla_status||'ok',is_simple_reaction:isSimpleReaction,is_existing_deal:true}}} const manager=[['M001','Анна Смирнова'],['M002','Иван Петров'],['M003','Алексей Орлов']][uid%3]; const hot=/стоим|цен|КП|готовы|встреч|договор|сколько/i.test(text); const deal_id='DEMO-DEAL-'+uid; return {json:{telegram_user_id:String(uid),telegram_username:input.from?.username||'demo_client',client_name:input.from?.first_name||'Клиент',chat_id:input.chat?.id||uid,message_text:text,deal_id,manager_id:manager[0],manager_name:manager[1],stage:'new',status:'active',deal_value:null,lead_temperature:hot?'hot':'warm',risk_score:hot?45:20,follow_up_required:!isSimpleReaction,last_client_message_at:now,last_manager_message_at:null,sla_status:'ok',communications:[comm],events:[{event_id:'EVENT-'+(input.message_id||Date.now()),event_type:'new_lead',deal_id,timestamp:now}],recommended_action:hot?'Уточнить объём обращений и предложить короткий созвон.':'Уточнить потребность клиента.',is_simple_reaction:isSimpleReaction,is_existing_deal:false}};"
+      },
+      "notes": "Demo upsert по telegram_user_id: создаёт deal/contact, назначает менеджера round robin и сохраняет client communication. Реальная persistence подключается вместо этого node."
+    },
+    {
+      "id": "a5d39d5f-57de-4f5f-96fe-d92aec79bf82",
+      "name": "Notify Assigned Manager",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        820,
+        300
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "__CONFIGURE_TELEGRAM_CHAT_ID__",
+        "text": "=🔥 Новый лид\n\n👤 Клиент: {{ $('Create or Find Mock Bitrix Deal').first().json.client_name }}\n💼 Сделка: {{ $('Create or Find Mock Bitrix Deal').first().json.deal_id }}\n\n🎯 Запрос:\n{{ $('Create or Find Mock Bitrix Deal').first().json.message_text }}\n\n🤖 AI-квалификация: {{ $('Create or Find Mock Bitrix Deal').first().json.lead_temperature }}\n⚠️ Риск: {{ $('Create or Find Mock Bitrix Deal').first().json.risk_score }}\n\n💡 Рекомендация:\n{{ $('Create or Find Mock Bitrix Deal').first().json.recommended_action }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "5434abd4-d085-4d81-91ed-4c5ea62ef07a",
+      "name": "Telegram Client Message",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        160,
+        480
+      ],
+      "parameters": {
+        "updates": [
+          "message"
+        ]
+      }
+    },
+    {
+      "id": "persist-demo-deal",
+      "name": "Persist Mock Bitrix Deal",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        300
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "__CONFIGURE_DATA_TABLE_ID__",
+          "cachedResultName": "Configure your n8n data table"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "telegram_user_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.telegram_user_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telegram_user_id": "={{ String($json.telegram_user_id) }}",
+            "client_chat_id": "={{ String($json.chat_id || $json.telegram_user_id) }}",
+            "deal_id": "={{ $json.deal_id }}",
+            "client_name": "={{ $json.client_name }}",
+            "manager_id": "={{ $json.manager_id }}",
+            "manager_name": "={{ $json.manager_name }}",
+            "stage": "={{ $json.stage }}",
+            "status": "={{ $json.status }}",
+            "deal_value": "={{ $json.deal_value }}",
+            "last_client_message_at": "={{ $json.last_client_message_at }}",
+            "lead_temperature": "={{ $json.lead_temperature }}",
+            "risk_score": "={{ $json.risk_score }}",
+            "follow_up_required": "={{ $json.follow_up_required }}",
+            "sla_status": "={{ $json.sla_status }}",
+            "communications_json": "={{ JSON.stringify($json.communications) }}",
+            "events_json": "={{ JSON.stringify($json.events) }}"
+          }
+        }
+      },
+      "notes": "Persistent demo storage across executions; replaces in-memory mock when live testing multiple messages."
+    },
+    {
+      "id": "google-crm-append",
+      "name": "Append Lead to Google CRM",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1260,
+        420
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "authentication": "oAuth2",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "__CONFIGURE_GOOGLE_SHEET_ID__",
+          "cachedResultName": "Configure your Google Sheet"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Sheet1",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "schema": []
+        },
+        "handlingExtraData": "insertInNewColumn",
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "locationDefine": {
+            "values": {
+              "headerRow": 1
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "welcome-if",
+      "name": "Is Start Command?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -120,
+        520
+      ],
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.message?.text || $json.text || '' }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "welcome-client",
+      "name": "Send Welcome to Client",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        520
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "👋 Здравствуйте!\n\nЯ помогу передать вашу заявку в AI Sales Monitor и подключить менеджера.\n\nПожалуйста, пришлите одним сообщением:\n\n👤 1. Ваше имя\n🏢 2. Название компании\n💼 3. Чем занимается компания\n🎯 4. Какую задачу нужно решить\n📱 5. Telegram для связи, если он отличается\n\nПосле этого мы оценим задачу и передадим её менеджеру. Спасибо! 🤝",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      }
+    },
+    {
+      "id": "client-confirmation",
+      "name": "Send Lead Confirmation to Client",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        520,
+        520
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $('Create or Find Mock Bitrix Deal').item.json.chat_id }}",
+        "text": "=👋 Спасибо, заявка получена!\n\nМы передали информацию в команду. Скоро с вами свяжутся и уточнят детали.\n\n📌 Номер вашей заявки:\n{{ $('Create or Find Mock Bitrix Deal').item.json.deal_id }}\n\nХорошего дня! 🤝",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      }
+    },
+    {
+      "id": "find-existing-deal",
+      "name": "Find Existing Client Deal",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        100,
+        520
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "__CONFIGURE_DATA_TABLE_ID__",
+          "cachedResultName": "Configure your n8n data table"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "telegram_user_id",
+              "condition": "eq",
+              "keyValue": "={{ String($json.message?.from?.id || $json.from?.id || $json.telegram_user_id || '') }}"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "is-substantive",
+      "name": "Is Substantive Client Message?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1040,
+        520
+      ],
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Create or Find Mock Bitrix Deal').item.json.is_simple_reaction }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Demo Client Message": {
+      "main": [
+        [
+          {
+            "node": "Create or Find Mock Bitrix Deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create or Find Mock Bitrix Deal": {
+      "main": [
+        [
+          {
+            "node": "Persist Mock Bitrix Deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Client Message": {
+      "main": [
+        [
+          {
+            "node": "Is Start Command?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Start Command?": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome to Client",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Find Existing Client Deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Existing Client Deal": {
+      "main": [
+        [
+          {
+            "node": "Create or Find Mock Bitrix Deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persist Mock Bitrix Deal": {
+      "main": [
+        [
+          {
+            "node": "Is Substantive Client Message?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Substantive Client Message?": {
+      "main": [
+        [
+          {
+            "node": "Notify Assigned Manager",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append Lead to Google CRM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Lead Confirmation to Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "active": false
+}

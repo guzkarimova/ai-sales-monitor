@@ -1,0 +1,200 @@
+{
+  "name": "AI Sales Monitor — Manager Reply",
+  "nodes": [
+    {
+      "id": "61d1b3bf-859f-47ce-98c8-9cc391bbfa2d",
+      "name": "Manager Reply Demo",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        160,
+        300
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "710b3d22-22d1-4f61-8157-f87e41e18405",
+      "name": "Parse Manager /reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const command='/reply DEMO-DEAL-000000000 Добрый день! Предлагаю созвониться завтра в 12:00.'; const p=command.split(' '); const deal_id=p[1]; const text=p.slice(2).join(' '); const now=new Date().toISOString(); return [{json:{deal_id,client_chat_id:000000000,manager_id:'M003',manager_name:'Алексей Орлов',manager_text:text,manager_communication:{communication_id:'MGR-'+Date.now(),sender:'manager',channel:'telegram',timestamp:now,text},last_manager_message_at:now,sla_status:'ok'}}];"
+      },
+      "notes": "Demo команда: /reply DEAL-... текст. В production manager chat trigger заменяет manual input."
+    },
+    {
+      "id": "c15421b1-ff33-44bf-8a05-9aa43f483280",
+      "name": "Send Manager Reply to Client",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        760,
+        300
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $('Prepare Dynamic Client Reply').item.json.client_chat_id }}",
+        "text": "={{ '[MANAGER] '+$('Prepare Dynamic Client Reply').item.json.manager_text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      }
+    },
+    {
+      "id": "f881cd89-d6ea-4652-9446-5ebb72331854",
+      "name": "Persist Manager Communication",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1080,
+        300
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "__CONFIGURE_DATA_TABLE_ID__",
+          "cachedResultName": "Configure your n8n data table"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "deal_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.deal_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "client_chat_id": "={{ String($json.client_chat_id) }}",
+            "last_manager_message_at": "={{ $json.last_manager_message_at }}",
+            "sla_status": "ok",
+            "communications_json": "={{ JSON.stringify([$json.manager_communication]) }}"
+          }
+        }
+      },
+      "notes": "Сохраняет manager communication и SLA ok в Data Table demo storage."
+    },
+    {
+      "id": "get-demo-deal",
+      "name": "Find Demo Deal",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        620,
+        520
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "__CONFIGURE_DATA_TABLE_ID__",
+          "cachedResultName": "Configure your n8n data table"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "deal_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.deal_id }}"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      }
+    },
+    {
+      "id": "prepare-reply",
+      "name": "Prepare Dynamic Client Reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        820,
+        520
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const parsed=$('Parse Manager /reply').first().json; const row=$input.first().json; return [{json:{...row,deal_id:parsed.deal_id,client_chat_id:String(row.client_chat_id||parsed.client_chat_id),manager_text:parsed.manager_text,manager_communication:parsed.manager_communication,last_manager_message_at:parsed.last_manager_message_at,sla_status:'ok'}}];"
+      }
+    }
+  ],
+  "connections": {
+    "Manager Reply Demo": {
+      "main": [
+        [
+          {
+            "node": "Parse Manager /reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Manager /reply": {
+      "main": [
+        [
+          {
+            "node": "Find Demo Deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Demo Deal": {
+      "main": [
+        [
+          {
+            "node": "Prepare Dynamic Client Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Dynamic Client Reply": {
+      "main": [
+        [
+          {
+            "node": "Persist Manager Communication",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persist Manager Communication": {
+      "main": [
+        [
+          {
+            "node": "Send Manager Reply to Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "active": false
+}

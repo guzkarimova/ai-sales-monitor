@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
+import {readFile, readdir} from 'node:fs/promises';
 import test from 'node:test';
 
 const read = path => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
@@ -39,4 +39,18 @@ test('corporate workflow documentation is complete', async () => {
   }
   assert.match(architecture, /ожидание > 30 минут/);
   assert.match(operations, /Production checklist/);
+});
+
+test('sanitized n8n exports are complete and contain no credentials', async () => {
+  const files = (await readdir(new URL('../workflows/', import.meta.url)))
+    .filter(name => name.endsWith('.json'))
+    .sort();
+  assert.equal(files.length, 9);
+  for (const file of files) {
+    const text = await read(`workflows/${file}`);
+    const workflow = JSON.parse(text);
+    assert.equal(workflow.active, false);
+    assert.ok(Array.isArray(workflow.nodes) && workflow.nodes.length > 0);
+    assert.doesNotMatch(text, /"credentials"|"webhookId"|n8n\.vsellm\.info/);
+  }
 });

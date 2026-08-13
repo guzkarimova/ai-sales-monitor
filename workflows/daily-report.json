@@ -1,0 +1,271 @@
+{
+  "name": "AI Sales Monitor — Daily Report",
+  "nodes": [
+    {
+      "id": "d87b8636-085c-4fcf-b3d8-dff4cce98d47",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        160,
+        260
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "5fda75e0-fba9-4151-9901-027283bfd9b5",
+      "name": "Generate Test Analysis Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        340
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return [{\"dialog_id\":\"D001\",\"client_name\":\"ООО Альфа\",\"manager_name\":\"Иван Петров\",\"manager_id\":\"M001\",\"deal_value\":180000,\"lead_temperature\":\"hot\",\"lead_status\":\"active\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":90,\"final_risk_score\":20,\"potential_lost_revenue\":0,\"is_critical\":true,\"problems\":[],\"recommended_action\":\"Менеджеру необходимо отправить план пилотного проекта и провести демо-встречу завтра в 12:00.\"},{\"dialog_id\":\"D002\",\"client_name\":\"ООО Бета\",\"manager_name\":\"Анна Смирнова\",\"manager_id\":\"M002\",\"deal_value\":500000,\"lead_temperature\":\"hot\",\"lead_status\":\"risk_of_loss\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":0,\"final_risk_score\":88,\"potential_lost_revenue\":500000,\"is_critical\":true,\"problems\":[\"Менеджер не ответил на сообщение клиента\",\"Клиент повторно обратился, указывая на срочность\",\"Отсутствие реакции менеджера на горячий запрос\"],\"recommended_action\":\"Немедленно связаться с клиентом для назначения звонка и обсуждения договора.\"},{\"dialog_id\":\"D003\",\"client_name\":\"АО Вектор\",\"manager_name\":\"Алексей Орлов\",\"manager_id\":\"M003\",\"deal_value\":250000,\"lead_temperature\":\"hot\",\"lead_status\":\"risk_of_loss\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":0,\"final_risk_score\":90,\"potential_lost_revenue\":250000,\"is_critical\":true,\"problems\":[\"Менеджер не ответил на прямой вопрос клиента о стоимости и тарифах.\",\"Менеджер не предложил следующий шаг.\",\"Менеджер не предоставил запрошенную информацию.\"],\"recommended_action\":\"Немедленно предоставить клиенту запрошенную информацию о стоимости и тарифах, а также предложить следующий шаг (например, демонстрацию или созвон для уточнения деталей).\"},{\"dialog_id\":\"D004\",\"client_name\":\"ООО Север\",\"manager_name\":\"Иван Петров\",\"manager_id\":\"M001\",\"deal_value\":120000,\"lead_temperature\":\"hot\",\"lead_status\":\"risk_of_loss\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":20,\"final_risk_score\":82,\"potential_lost_revenue\":120000,\"is_critical\":true,\"problems\":[\"Менеджер не предложил следующий шаг после ответа на вопрос.\",\"Менеджер не отправил детали предложения, несмотря на запрос клиента.\",\"Клиент повторно запрашивает детали, что указывает на задержку или игнорирование предыдущего запроса.\"],\"recommended_action\":\"Немедленно связаться с клиентом, извиниться за задержку и отправить детали предложения. Предложить созвониться для обсуждения.\"},{\"dialog_id\":\"D005\",\"client_name\":\"ООО Гамма\",\"manager_name\":\"Анна Смирнова\",\"manager_id\":\"M002\",\"deal_value\":65000,\"lead_temperature\":\"hot\",\"lead_status\":\"risk_of_loss\",\"negative_sentiment\":true,\"follow_up_required\":true,\"manager_quality_score\":10,\"final_risk_score\":86,\"potential_lost_revenue\":65000,\"is_critical\":true,\"problems\":[\"Менеджер не предложил решение проблемы с переносом демонстрации.\",\"Менеджер не предложил следующий шаг.\",\"Клиент выражает сильное недовольство, что увеличивает риск потери сделки.\"],\"recommended_action\":\"Немедленно связаться с клиентом, принести извинения и предложить конкретное время для демонстрации, гарантируя ее проведение. Возможно, предложить компенсацию за неудобства.\"},{\"dialog_id\":\"D006\",\"client_name\":\"ИП Соколов\",\"manager_name\":\"Алексей Орлов\",\"manager_id\":\"M003\",\"deal_value\":null,\"lead_temperature\":\"cold\",\"lead_status\":\"active\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":70,\"final_risk_score\":18,\"potential_lost_revenue\":0,\"is_critical\":false,\"problems\":[],\"recommended_action\":\"Отправить обзор возможностей, как предложил менеджер, и запланировать follow-up через 1-2 месяца для проверки изменения интереса клиента.\"},{\"dialog_id\":\"D007\",\"client_name\":\"ООО Меридиан\",\"manager_name\":\"Иван Петров\",\"manager_id\":\"M001\",\"deal_value\":90000,\"lead_temperature\":\"warm\",\"lead_status\":\"active\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":80,\"final_risk_score\":18,\"potential_lost_revenue\":0,\"is_critical\":false,\"problems\":[],\"recommended_action\":\"Дождаться ответа клиента по предложенному пилоту и назначить встречу.\"},{\"dialog_id\":\"D008\",\"client_name\":\"ООО Спектр\",\"manager_name\":\"Анна Смирнова\",\"manager_id\":\"M002\",\"deal_value\":30000,\"lead_temperature\":\"warm\",\"lead_status\":\"risk_of_loss\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":10,\"final_risk_score\":60,\"potential_lost_revenue\":30000,\"is_critical\":false,\"problems\":[\"Менеджер не ответил на вопрос клиента конкретным предложением.\",\"Менеджер не предложил следующий шаг.\",\"Менеджер переложил ответственность на клиента (посмотреть сайт).\"],\"recommended_action\":\"Менеджеру необходимо связаться с клиентом, уточнить детали его бизнеса и предложить конкретные решения, а не просто отправлять на сайт. Предложить созвон или встречу.\"},{\"dialog_id\":\"D009\",\"client_name\":\"АО Прогресс\",\"manager_name\":\"Алексей Орлов\",\"manager_id\":\"M003\",\"deal_value\":500000,\"lead_temperature\":\"hot\",\"lead_status\":\"active\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":90,\"final_risk_score\":12,\"potential_lost_revenue\":0,\"is_critical\":true,\"problems\":[],\"recommended_action\":\"Убедиться, что договор и приглашение на встречу отправлены клиенту сегодня до 17:00.\"},{\"dialog_id\":\"D010\",\"client_name\":\"ООО Фактор\",\"manager_name\":\"Иван Петров\",\"manager_id\":\"M001\",\"deal_value\":120000,\"lead_temperature\":\"warm\",\"lead_status\":\"active\",\"negative_sentiment\":true,\"follow_up_required\":true,\"manager_quality_score\":90,\"final_risk_score\":20,\"potential_lost_revenue\":0,\"is_critical\":true,\"problems\":[],\"recommended_action\":\"Провести встречу с клиентом для обсуждения пилотного проекта и его масштабирования.\"},{\"dialog_id\":\"D011\",\"client_name\":\"ООО Лидер\",\"manager_name\":\"Анна Смирнова\",\"manager_id\":\"M002\",\"deal_value\":250000,\"lead_temperature\":\"hot\",\"lead_status\":\"risk_of_loss\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":20,\"final_risk_score\":76,\"potential_lost_revenue\":250000,\"is_critical\":true,\"problems\":[\"Менеджер не предложил следующий шаг.\",\"Менеджер не уточнил детали для подготовки КП.\",\"Менеджер не подтвердил сроки отправки КП.\"],\"recommended_action\":\"Менеджеру необходимо немедленно связаться с клиентом для уточнения деталей, необходимых для подготовки коммерческого предложения, и обозначить сроки его отправки.\"},{\"dialog_id\":\"D012\",\"client_name\":\"ООО Горизонт\",\"manager_name\":\"Алексей Орлов\",\"manager_id\":\"M003\",\"deal_value\":180000,\"lead_temperature\":\"warm\",\"lead_status\":\"active\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":60,\"final_risk_score\":30,\"potential_lost_revenue\":0,\"is_critical\":false,\"problems\":[\"Менеджер не предложил следующий шаг.\",\"Менеджер не уточнил детали потребности клиента.\"],\"recommended_action\":\"Менеджеру необходимо уточнить у клиента детали проекта, предложить демонстрацию или встречу, а также обозначить следующие шаги.\"},{\"dialog_id\":\"D013\",\"client_name\":\"АО Контур\",\"manager_name\":\"Иван Петров\",\"manager_id\":\"M001\",\"deal_value\":500000,\"lead_temperature\":\"hot\",\"lead_status\":\"active\",\"negative_sentiment\":false,\"follow_up_required\":false,\"manager_quality_score\":90,\"final_risk_score\":6,\"potential_lost_revenue\":0,\"is_critical\":false,\"problems\":[],\"recommended_action\":\"Провести демо в среду, как предложено менеджером.\"},{\"dialog_id\":\"D014\",\"client_name\":\"ООО Импульс\",\"manager_name\":\"Анна Смирнова\",\"manager_id\":\"M002\",\"deal_value\":120000,\"lead_temperature\":\"hot\",\"lead_status\":\"active\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":90,\"final_risk_score\":12,\"potential_lost_revenue\":0,\"is_critical\":true,\"problems\":[],\"recommended_action\":\"Убедиться, что приглашение на встречу отправлено и подтверждено клиентом.\"},{\"dialog_id\":\"D015\",\"client_name\":\"Холдинг Восток\",\"manager_name\":\"Алексей Орлов\",\"manager_id\":\"M003\",\"deal_value\":900000,\"lead_temperature\":\"hot\",\"lead_status\":\"risk_of_loss\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":20,\"final_risk_score\":66,\"potential_lost_revenue\":900000,\"is_critical\":true,\"problems\":[\"Менеджер не предложил конкретный следующий шаг.\",\"Менеджер не уточнил детали запроса клиента.\",\"Менеджер не подтвердил сроки подготовки плана пилота.\"],\"recommended_action\":\"Менеджеру необходимо немедленно связаться с клиентом, чтобы уточнить детали запроса для плана пилота, предложить конкретные сроки его подготовки и согласовать следующий шаг (например, презентацию или встречу).\"},{\"dialog_id\":\"D016\",\"client_name\":\"ООО Сфера\",\"manager_name\":\"Иван Петров\",\"manager_id\":\"M001\",\"deal_value\":65000,\"lead_temperature\":\"hot\",\"lead_status\":\"active\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":90,\"final_risk_score\":12,\"potential_lost_revenue\":0,\"is_critical\":true,\"problems\":[],\"recommended_action\":\"Провести короткий звонок для уточнения объёма интеграций и подтверждения сроков.\"},{\"dialog_id\":\"D017\",\"client_name\":\"ООО Право\",\"manager_name\":\"Анна Смирнова\",\"manager_id\":\"M002\",\"deal_value\":180000,\"lead_temperature\":\"warm\",\"lead_status\":\"active\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":80,\"final_risk_score\":18,\"potential_lost_revenue\":0,\"is_critical\":false,\"problems\":[],\"recommended_action\":\"Убедиться, что шаблоны документов были отправлены клиенту, и предложить обсудить их или ответить на вопросы.\"},{\"dialog_id\":\"D018\",\"client_name\":\"ООО Финанс\",\"manager_name\":\"Алексей Орлов\",\"manager_id\":\"M003\",\"deal_value\":250000,\"lead_temperature\":\"hot\",\"lead_status\":\"active\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":90,\"final_risk_score\":12,\"potential_lost_revenue\":0,\"is_critical\":true,\"problems\":[],\"recommended_action\":\"Убедиться, что финансовый менеджер свяжется с клиентом завтра в 10:00 и предоставит счет.\"},{\"dialog_id\":\"D019\",\"client_name\":\"ИП Волков\",\"manager_name\":\"Иван Петров\",\"manager_id\":\"M001\",\"deal_value\":null,\"lead_temperature\":\"warm\",\"lead_status\":\"risk_of_loss\",\"negative_sentiment\":false,\"follow_up_required\":true,\"manager_quality_score\":0,\"final_risk_score\":66,\"potential_lost_revenue\":0,\"is_critical\":false,\"problems\":[\"Менеджер не ответил на вопрос клиента.\",\"Менеджер не проявил заинтересованности в клиенте.\",\"Менеджер не предложил следующий шаг.\",\"Менеджер не попытался выявить потребность клиента.\"],\"recommended_action\":\"Срочно связаться с клиентом, извиниться за некорректный ответ менеджера, уточнить потребность клиента и предложить конкретное решение или демонстрацию продукта.\"},{\"dialog_id\":\"D020\",\"client_name\":\"Группа Статус\",\"manager_name\":\"Анна Смирнова\",\"manager_id\":\"M002\",\"deal_value\":900000,\"lead_temperature\":\"hot\",\"lead_status\":\"active\",\"negative_sentiment\":false,\"follow_up_required\":false,\"manager_quality_score\":90,\"final_risk_score\":6,\"potential_lost_revenue\":0,\"is_critical\":false,\"problems\":[],\"recommended_action\":\"Подготовить архитектуру и расчет к встрече с коммерческим директором.\"}].map(d=>({json:d}));"
+      },
+      "notes": "Использует фактические результаты последнего тестового execution Analyze Dialogues для независимой проверки ежедневного отчёта."
+    },
+    {
+      "id": "42dee6f9-c5c1-40ce-b00c-5dc47f4b0305",
+      "name": "Calculate Daily Metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        340
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const ds=$input.all().map(i=>i.json); const num=(v)=>typeof v==='number'&&Number.isFinite(v)?v:0; const count=(fn)=>ds.filter(fn).length; const sum=(f)=>ds.reduce((a,d)=>a+num(d[f]),0); const managers={}; for(const d of ds){const m=d.manager_name||'Не указан'; managers[m]??={manager_name:m,dialogues:0,hot_leads:0,warm_leads:0,risk_leads:0,critical_leads:0,quality:0,risk:0,potential_lost_revenue:0}; const x=managers[m]; x.dialogues++; x.hot_leads+=d.lead_temperature==='hot'?1:0; x.warm_leads+=d.lead_temperature==='warm'?1:0; x.risk_leads+=d.lead_status==='risk_of_loss'?1:0; x.critical_leads+=d.is_critical===true?1:0; x.quality+=num(d.manager_quality_score); x.risk+=num(d.final_risk_score); x.potential_lost_revenue+=num(d.potential_lost_revenue);} for(const x of Object.values(managers)){x.average_quality_score=Math.round(x.quality/x.dialogues);x.average_risk_score=Math.round(x.risk/x.dialogues);delete x.quality;delete x.risk;} const metrics={total_dialogues:ds.length,hot_leads:count(d=>d.lead_temperature==='hot'),warm_leads:count(d=>d.lead_temperature==='warm'),cold_leads:count(d=>d.lead_temperature==='cold'),risk_leads:count(d=>d.lead_status==='risk_of_loss'),critical_leads:count(d=>d.is_critical===true),negative_dialogues:count(d=>d.negative_sentiment===true),followups_required:count(d=>d.follow_up_required===true),total_pipeline_value:sum('deal_value'),potential_lost_revenue:sum('potential_lost_revenue'),average_manager_quality_score:Math.round(ds.reduce((a,d)=>a+num(d.manager_quality_score),0)/Math.max(1,ds.length)),average_risk_score:Math.round(ds.reduce((a,d)=>a+num(d.final_risk_score),0)/Math.max(1,ds.length))}; return [{json:{metrics,manager_statistics:Object.values(managers),critical_examples:ds.filter(d=>d.is_critical).sort((a,b)=>num(b.final_risk_score)-num(a.final_risk_score)).slice(0,5)}}];"
+      },
+      "notes": "Считает агрегаты отдела: воронку, риски, follow-up, качество и потенциально потерянную выручку."
+    },
+    {
+      "id": "61a9cf96-a492-44c1-bd75-48674841ca95",
+      "name": "Prepare Manager Statistics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        340
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const d=$json; return {json:{...d,report_context:JSON.stringify({metrics:d.metrics,manager_statistics:d.manager_statistics,critical_examples:d.critical_examples})}};"
+      },
+      "notes": "Готовит AI контекст: агрегаты и статистику по каждому менеджеру."
+    },
+    {
+      "id": "1414bcea-cfca-4c79-bd7c-49f587fda07d",
+      "name": "AI Daily Summary",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1210,
+        340
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Составь короткий управленческий отчёт на русском по данным ниже. Не придумывай цифры. Приоритет: критические лиды, горячие лиды под риском, потерянная выручка, follow-up, негатив, менеджеры с низким quality score. Рекомендации — конкретные действия.\\n\\nДанные: {{ $json.report_context }}",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "SystemMessagePromptTemplate",
+              "message": "Ты AI-аналитик руководителя отдела продаж. Используй только переданные рассчитанные показатели, не создавай новых цифр и не давай общих советов."
+            }
+          ]
+        },
+        "batching": {
+          "batchSize": 1
+        }
+      },
+      "notes": "Создаёт короткий управленческий отчёт только по рассчитанным показателям.",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "649233f9-3609-458d-ab89-9dc6b8e7e38c",
+      "name": "Gemini via RouterAI",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1210,
+        560
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "google/gemini-2.5-flash",
+          "cachedResultName": "google/gemini-2.5-flash"
+        },
+        "responsesApiEnabled": false,
+        "options": {
+          "temperature": 0.2,
+          "maxRetries": 2,
+          "timeout": 120000
+        }
+      }
+    },
+    {
+      "id": "71cbb0e0-3fec-4110-a6ec-753f619f7d63",
+      "name": "Format Daily Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1480,
+        340
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const base=$('Prepare Manager Statistics').item.json; const ai=$json.output??$json.text??$json.response??'AI-сводка недоступна'; const m=base.metrics; const money=v=>new Intl.NumberFormat('ru-RU').format(v)+' ₽'; const managers=(base.manager_statistics||[]).sort((a,b)=>a.average_quality_score-b.average_quality_score).map(x=>x.manager_name+' — '+x.average_quality_score+'/100').join('\\\\n'); const text='📊 AI-отчёт отдела продаж\\\\n'+new Date().toLocaleDateString('ru-RU')+'\\\\n\\\\nОбработано диалогов: '+m.total_dialogues+'\\\\n🔥 Горячих лидов: '+m.hot_leads+'\\\\n⚠️ Лидов под риском: '+m.risk_leads+'\\\\n📞 Требуют follow-up: '+m.followups_required+'\\\\n😡 Негативных обращений: '+m.negative_dialogues+'\\\\n\\\\n💰 Воронка: '+money(m.total_pipeline_value)+'\\\\n💸 Потенциально потерянная выручка: '+money(m.potential_lost_revenue)+'\\\\n\\\\n👥 Качество работы менеджеров:\\\\n'+managers+'\\\\n\\\\n🎯 AI-вывод руководителю:\\\\n'+String(ai); return {json:{...base,ai_summary:String(ai),daily_report:text}};"
+      },
+      "notes": "Форматирует итоговый отчёт для руководителя без JSON и технических полей."
+    },
+    {
+      "id": "7789ff3d-5bce-469d-af6a-0604242fd25a",
+      "name": "Send Daily Report",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1740,
+        340
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "__CONFIGURE_TELEGRAM_CHAT_ID__",
+        "text": "={{ $json.daily_report }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "disabled": false,
+      "notes": "Отключён до указания chat ID руководителя; готовый daily_report доступен в execution data."
+    },
+    {
+      "id": "ae9e305e-d0fb-40c2-ab1e-2c4791643396",
+      "name": "Schedule Trigger (Inactive)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        160,
+        440
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 9,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Generate Test Analysis Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Test Analysis Results": {
+      "main": [
+        [
+          {
+            "node": "Calculate Daily Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Daily Metrics": {
+      "main": [
+        [
+          {
+            "node": "Prepare Manager Statistics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Manager Statistics": {
+      "main": [
+        [
+          {
+            "node": "AI Daily Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Daily Summary": {
+      "main": [
+        [
+          {
+            "node": "Format Daily Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini via RouterAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Daily Summary",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Daily Report": {
+      "main": [
+        [
+          {
+            "node": "Send Daily Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger (Inactive)": {
+      "main": [
+        [
+          {
+            "node": "Generate Test Analysis Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "active": false
+}

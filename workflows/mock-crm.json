@@ -1,0 +1,131 @@
+{
+  "name": "AI Sales Monitor — Mock CRM",
+  "nodes": [
+    {
+      "id": "8b66ceee-cd5a-4a40-9d96-625ca3eec0bf",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        160,
+        300
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "8cb9868f-e3ca-4270-a74a-597b22711e13",
+      "name": "Mock CRM Deals",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const names=['ООО Альфа','ООО Бета','АО Вектор','ООО Север','ООО Гамма','ИП Соколов','ООО Меридиан','ООО Спектр','АО Прогресс','ООО Фактор','ООО Лидер','ООО Горизонт','АО Контур','ООО Импульс','Холдинг Восток','ООО Сфера','ООО Право','ООО Финанс','ИП Волков','Группа Статус']; const managers=[['USER-12','Иван Петров'],['USER-18','Анна Смирнова'],['USER-24','Алексей Орлов']]; const stages=['new','qualification','proposal','negotiation','contract','won','lost']; const texts=[['Нужен AI-ассистент для отдела продаж. Сколько стоит?','Уточним задачу и подготовим расчёт.'],['Готовы запускать проект. Назначим звонок?','Коллеги, подскажите, вы получили сообщение?'],['Пришлите коммерческое предложение и тарифы.','Добрый день.'],['Можно интегрировать с CRM?','Да, интеграция возможна.','Когда ждать детали? Пишу повторно.'],['Ваш менеджер снова перенёс демонстрацию. Это неприемлемо.','Извините за неудобства.'],['Пока изучаем рынок, внедрение не планируем.','Отправлю обзор решений.'],['Интересен контроль звонков.','Предлагаю пилот во вторник в 15:00.'],['Хотим увеличить продажи. Что предложите?','Посмотрите сайт.'],['Бюджет согласован, готовы начать.','Сегодня направлю договор и встречу.'],['Это дорого, есть упрощённый вариант?','Предлагаю пилот за 65 000 ₽.'],['Пришлите КП на внедрение.','Хорошо, принято.'],['Какие сроки внедрения?','Обычно 3–4 недели.'],['Конкурент дешевле. Чем вы лучше?','Проведём демо с KPI.'],['Хотим встречу с руководителем.','Давайте в четверг в 16:00.'],['Нужна система для 80 менеджеров, ждём план пилота.','Подготовим.'],['За сколько дней запуск?','Пилот за 10 рабочих дней.'],['Какие условия договора и NDA?','Сегодня направлю документы.'],['Обсудим оплату частями?','50% до старта, 50% после пилота.'],['Подойдёт ли продукт команде из пяти человек?','Информация есть на сайте.'],['Нужен контроль 100 менеджеров и интеграция.','В пятницу встреча с ЛПР.']]; const amounts=[180000,500000,250000,120000,65000,null,90000,30000,500000,120000,250000,180000,500000,120000,900000,65000,180000,250000,null,900000]; return names.map((name,i)=>{const m=managers[i%3], tx=texts[i]; return {json:{dealId:'DEAL-'+(1042+i),contact:{id:'C-'+(543+i),name},responsible:{id:m[0],name:m[1]},pipeline:'Продажи',stage:stages[i%stages.length],amount:amounts[i],currency:'RUB',source:['Telegram','WhatsApp','Email'][i%3],createdAt:'2026-08-'+String(11-(i%5)).padStart(2,'0')+'T10:00:00+03:00',lastActivityAt:'2026-08-12T10:00:00+03:00',communications:tx.map((t,j)=>({direction:j%2===0?'incoming':'outgoing',type:'message',createdAt:'2026-08-12T1'+String(j)+' :00:00+03:00'.replace(' ',''),text:t}))}}});"
+      },
+      "notes": "Эмулирует внешний CRM-ответ в отдельном формате: deals, contacts, responsible, stage, amount, communications."
+    },
+    {
+      "id": "13f0dc7f-7c71-41b1-8eed-25922123c2e2",
+      "name": "CRM Data Normalizer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const d=$json; const messages=(d.communications||[]).map(c=>({sender:c.direction==='incoming'?'client':'manager',timestamp:c.createdAt,text:c.text})); return {json:{dialog_id:d.dealId,lead_id:d.dealId,client_name:d.contact?.name||'Не указан',manager_name:d.responsible?.name||'Не указан',manager_id:d.responsible?.id||null,source:String(d.source||'').toLowerCase(),deal_value:typeof d.amount==='number'?d.amount:null,crm_stage:d.stage||'new',crm_pipeline:d.pipeline||'Продажи',created_at:d.createdAt,last_message_at:d.lastActivityAt,messages,crm_provider:'mock',crm_entity_type:'deal',crm_entity_id:d.dealId}};"
+      },
+      "notes": "Единая точка интеграции: incoming→client, outgoing→manager, amount→deal_value, communications→messages."
+    },
+    {
+      "id": "366dd848-c268-41c9-b85d-32c4c14a7207",
+      "name": "Simulate CRM Task Creation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        980,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const d=$json; const clientMsgs=(d.messages||[]).filter(m=>m.sender==='client').map(m=>m.text).join(' '); const needs=clientMsgs.length>0 && (/КП|стоим|цен|повтор|неприемлем|встреч|договор|оплат|срок|подойдёт|пилот/i.test(clientMsgs)); const critical=/повтор|неприемлем|КП|стоим|цен/i.test(clientMsgs); return {json:{...d,crm_task:needs?{crm_entity_id:d.crm_entity_id,task_type:critical?'follow_up':'manager_review',assigned_to:d.manager_name,priority:critical?'high':'normal',due:critical?'today':'next_business_day',title:'Связаться с '+d.client_name,description:'Проверить коммуникацию на стадии '+d.crm_stage+' и выполнить следующий шаг.'}:null,crm_task_recommended:needs}};"
+      },
+      "notes": "Не отправляет задачи в CRM. Формирует recommendation object для будущего create_task/follow_up."
+    },
+    {
+      "id": "cc63521a-1ff5-4c76-8392-e6c19ea27d70",
+      "name": "Bitrix24 and amoCRM Mapping Examples",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1260,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return [{json:{bitrix24_mapping_example:{deal_id:'crm_entity_id',TITLE:'client_name',ASSIGNED_BY_ID:'manager_id',OPPORTUNITY:'deal_value',STAGE_ID:'crm_stage',timeline:'messages'},amocrm_mapping_example:{'lead.id':'crm_entity_id','lead.name':'client_name',responsible_user_id:'manager_id',price:'deal_value',status:'crm_stage','notes':'messages'},note:'Архитектурный mapping example; реальные Bitrix24/amoCRM API не подключены.'}}];"
+      },
+      "notes": "Концептуальные mapping-примеры. Реальные CRM API не подключены."
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Mock CRM Deals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mock CRM Deals": {
+      "main": [
+        [
+          {
+            "node": "CRM Data Normalizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRM Data Normalizer": {
+      "main": [
+        [
+          {
+            "node": "Simulate CRM Task Creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simulate CRM Task Creation": {
+      "main": [
+        [
+          {
+            "node": "Bitrix24 and amoCRM Mapping Examples",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "active": false
+}

@@ -1,6 +1,7 @@
 .DS_Store
 config.local.js
+.env.n8n.local
+workflows-private/
 *.log
 tmp/
 node_modules/
-

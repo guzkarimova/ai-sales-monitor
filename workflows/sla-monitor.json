@@ -1,0 +1,138 @@
+{
+  "name": "AI Sales Monitor — SLA Monitor",
+  "nodes": [
+    {
+      "id": "d524a680-2833-4dcd-b866-d6fa974dc816",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        160,
+        300
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "ee0d4ccf-e989-46bf-bf9b-2d82209d4e7b",
+      "name": "Get Active Deals",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const t=new Date(Date.now()-5*60000).toISOString(); return [{json:{deal_id:'DEMO-DEAL-SLA-001',client_name:'ООО SLA Demo',manager_name:'Анна Смирнова',manager_id:'M001',lead_temperature:'hot',risk_score:72,deal_value:250000,last_client_message_at:t,last_manager_message_at:null,communications:[{sender:'client',timestamp:t,text:'Готовы начать в этом месяце. Когда можем созвониться?'}],sla_warning_sent_at:null,sla_breach_sent_at:null,sla_status:'ok',config:{demo_mode:true,production_sla_minutes:60,demo_sla_minutes:2,sla_warning_multiplier:1,sla_breach_multiplier:2,sla_critical_multiplier:3}}}];"
+      },
+      "notes": "Demo source: deal с последним сообщением клиента 5 минут назад; production source заменяется Mock Bitrix Data Table/API."
+    },
+    {
+      "id": "3cc94a59-184b-4c0d-9fe9-631d7e8e72d0",
+      "name": "Calculate Waiting Time and SLA",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const d=$json; const sla=d.config.demo_mode?d.config.demo_sla_minutes:d.config.production_sla_minutes; const waiting=Math.max(0,Math.floor((Date.now()-new Date(d.last_client_message_at).getTime())/60000)); let status=waiting<sla?'ok':waiting<2*sla?'warning':waiting<3*sla?'breached':'critical'; const eventType=status==='warning'?'sla_warning':status==='breached'?'sla_breach':status==='critical'?'sla_critical':null; return {json:{...d,sla_minutes:sla,waiting_minutes:waiting,sla_status:status,sla_event:eventType?{event_id:'SLA-'+d.deal_id+'-'+status,event_type:eventType,deal_id:d.deal_id,manager_name:d.manager_name,waiting_minutes:waiting,timestamp:new Date().toISOString(),metadata:{demo_mode:d.config.demo_mode}}:null,sla_risk_score:Math.min(100,(Number(d.risk_score)||0)+(status==='warning'?10:status==='breached'?20:status==='critical'?30:0))}};"
+      },
+      "notes": "Единая SLA-логика: Demo Mode 2 минуты, production 60 минут; формирует event history без повторных уведомлений."
+    },
+    {
+      "id": "18f5fd29-99b5-4a33-88bc-617cf72c6aa0",
+      "name": "Send SLA Warning",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1060,
+        300
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "__CONFIGURE_TELEGRAM_CHAT_ID__",
+        "text": "=⏰ Клиент ждёт ответа\\n\\n👤 Клиент: {{ $json.client_name }}\\n💼 Сделка: {{ $json.deal_id }}\\n🔥 Температура: {{ $json.lead_temperature }}\\n⏱ Без ответа: {{ $json.waiting_minutes }} мин\\n⚠️ SLA: {{ $json.sla_status }}\\n\\nПоследнее сообщение: {{ $json.communications[0].text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      }
+    },
+    {
+      "id": "sla-schedule",
+      "name": "SLA Schedule (disabled until publish)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        460
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Active Deals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Active Deals": {
+      "main": [
+        [
+          {
+            "node": "Calculate Waiting Time and SLA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Waiting Time and SLA": {
+      "main": [
+        [
+          {
+            "node": "Send SLA Warning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SLA Schedule (disabled until publish)": {
+      "main": [
+        [
+          {
+            "node": "Get Active Deals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "active": false
+}

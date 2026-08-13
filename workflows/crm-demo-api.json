@@ -1,0 +1,91 @@
+{
+  "name": "AI Sales Monitor — CRM Demo API",
+  "nodes": [
+    {
+      "id": "cf7ad5e3-afce-4b83-b9e2-0af6d8ba9944",
+      "name": "CRM API Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "multipleMethods": true,
+        "path": "ai-sales-monitor/crm-event",
+        "authentication": "none",
+        "responseMode": "lastNode",
+        "responseData": "firstEntryJson",
+        "options": {
+          "allowedOrigins": "http://localhost:8080"
+        }
+      }
+    },
+    {
+      "id": "655bddf0-642c-4c81-b40a-05d7c4404cb0",
+      "name": "Process CRM Event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const body=$('CRM API Webhook').first().json.body||{}; const event=body.event_type||'health_check'; const id=body.deal_id||'DEAL-1001'; const p=body.payload||{}; const now=new Date().toISOString(); const rows=$input.all().map(x=>x.json).filter(x=>x.deal_id); const deals=Array.from({length:20},(_,i)=>({deal_id:'DEAL-'+(1001+i),company:['ООО Альфа','ИП Романов','СтройГарант','ЭкоДом','Вектор Групп'][i%5],contact_name:'Demo Contact',manager_name:['Анна Смирнова','Иван Петров','Алексей Орлов'][i%3],stage:['new','qualification','proposal','negotiation','won'][i%5],status:i%5===4?'won':'active',deal_value:35000+((i*17000)%145000),lead_temperature:['HOT','WARM','COLD'][i%3],ai_risk_score:(i*13+18)%91,manager_quality_score:78+(i%20),follow_up_required:i%3!==0,negative_sentiment:false,sla_status:i%4===3?'breached':'ok',waiting_minutes:i%4===3?7:0,client_intent:'purchase_intent',client_need:'AI automation',recommended_action:'Follow up with client',summary:'Demo CRM deal',created_at:now,last_activity_at:now,communications:[],events:[]})); for(const r of rows){let comm=[];let ev=[];try{comm=r.communications_json?JSON.parse(r.communications_json):[]}catch(e){} try{ev=r.events_json?JSON.parse(r.events_json):[]}catch(e){} const d={deal_id:r.deal_id,company:r.client_name||'Новый клиент',contact_name:r.client_name||'Контакт',telegram_username:r.telegram_user_id?('@telegram_'+r.telegram_user_id):'',manager_id:r.manager_id,manager_name:r.manager_name,stage:r.stage,status:r.status,deal_value:r.deal_value||0,lead_temperature:String(r.lead_temperature||'warm').toUpperCase(),ai_risk_score:r.risk_score||0,manager_quality_score:0,follow_up_required:r.follow_up_required,negative_sentiment:false,sla_status:String(r.sla_status||'ok').toUpperCase(),waiting_minutes:0,client_intent:'purchase_intent',client_need:'AI automation',recommended_action:'Связаться с клиентом',summary:'Заявка из Telegram',created_at:r.createdAt||now,last_activity_at:r.last_client_message_at||now,communications:comm,events:ev}; const i=deals.findIndex(x=>x.deal_id===d.deal_id); if(i>=0) deals[i]=d; else deals.push(d);} if(event==='health_check') return [{json:{success:true,status:'ok',service:'AI Sales Monitor',mode:'demo',timestamp:now}}]; if(event==='get_deals') return [{json:{success:true,count:deals.length,deals}}]; const d=deals.find(x=>x.deal_id===id)||deals[0]; if(event==='manager_reply'){d.communications.push({sender:'manager',channel:'crm',timestamp:now,text:p.text||''});d.waiting_minutes=0;d.sla_status='ok';d.follow_up_required=false;} if(event==='new_client_message'){d.communications.push({sender:'client',channel:'crm',timestamp:now,text:p.text||''});d.follow_up_required=true;d.lead_temperature='HOT';d.ai_risk_score=Math.min(100,d.ai_risk_score+10);} if(event==='sla_breach'){d.sla_status='breached';d.waiting_minutes=7;d.ai_risk_score=Math.min(100,d.ai_risk_score+15);} if(event==='change_stage'&&p.stage)d.stage=p.stage; d.events.push({event_type:event,timestamp:now}); return [{json:{success:true,event,count:deals.length,deals,event_deal:d,deal:d,telegram_sent:false}}];"
+      }
+    },
+    {
+      "id": "load-crm-rows",
+      "name": "Load CRM Data Table Rows",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        220,
+        220
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "__CONFIGURE_DATA_TABLE_ID__",
+          "cachedResultName": "Configure your n8n data table"
+        },
+        "returnAll": true
+      }
+    }
+  ],
+  "connections": {
+    "CRM API Webhook": {
+      "main": [
+        null,
+        [
+          {
+            "node": "Load CRM Data Table Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load CRM Data Table Rows": {
+      "main": [
+        [
+          {
+            "node": "Process CRM Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "active": false
+}

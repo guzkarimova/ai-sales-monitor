@@ -1,0 +1,371 @@
+{
+  "name": "AI Sales Monitor — Analyze Dialogues",
+  "nodes": [
+    {
+      "id": "6ca4bb15-02ee-466a-944d-21415de7b853",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        160,
+        260
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "2168002f-7d4b-4f21-a1f7-1703327c2a5a",
+      "name": "Generate Test Dialogues",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        320
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return [{\"dialog_id\":\"D001\",\"lead_id\":\"L001\",\"client_name\":\"ООО Альфа\",\"manager_name\":\"Иван Петров\",\"manager_id\":\"M001\",\"source\":\"telegram\",\"deal_value\":180000,\"created_at\":\"2026-08-11T10:00:00+03:00\",\"last_message_at\":\"2026-08-11T11:00:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-11T10:00:00+03:00\",\"text\":\"Нужен AI-ассистент для 300 обращений в день. Сколько стоит?\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T10:10:00+03:00\",\"text\":\"Уточните каналы и CRM, чтобы рассчитать решение.\"},{\"sender\":\"client\",\"timestamp\":\"2026-08-11T10:20:00+03:00\",\"text\":\"Telegram и Bitrix24, хотим начать в сентябре.\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T11:00:00+03:00\",\"text\":\"Подходит пилот за 180 000 ₽. Сегодня пришлю план, завтра в 12:00 проведём демо. Удобно? \"}]},{\"dialog_id\":\"D002\",\"lead_id\":\"L002\",\"client_name\":\"ООО Бета\",\"manager_name\":\"Анна Смирнова\",\"manager_id\":\"M002\",\"source\":\"whatsapp\",\"deal_value\":500000,\"created_at\":\"2026-08-10T09:00:00+03:00\",\"last_message_at\":\"2026-08-11T15:00:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-10T09:00:00+03:00\",\"text\":\"Готовы запускать автоматизацию продаж. Назначим звонок и обсудим договор?\"},{\"sender\":\"client\",\"timestamp\":\"2026-08-11T15:00:00+03:00\",\"text\":\"Коллеги, подскажите, вы получили сообщение? Нам нужно решение сегодня.\"}]},{\"dialog_id\":\"D003\",\"lead_id\":\"L003\",\"client_name\":\"АО Вектор\",\"manager_name\":\"Алексей Орлов\",\"manager_id\":\"M003\",\"source\":\"email\",\"deal_value\":250000,\"created_at\":\"2026-08-09T12:00:00+03:00\",\"last_message_at\":\"2026-08-09T12:30:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-09T12:00:00+03:00\",\"text\":\"Сколько стоит внедрение аналитики звонков на 20 менеджеров?\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-09T12:10:00+03:00\",\"text\":\"Добрый день.\"},{\"sender\":\"client\",\"timestamp\":\"2026-08-09T12:30:00+03:00\",\"text\":\"Жду стоимость и варианты тарифа.\"}]},{\"dialog_id\":\"D004\",\"lead_id\":\"L004\",\"client_name\":\"ООО Север\",\"manager_name\":\"Иван Петров\",\"manager_id\":\"M001\",\"source\":\"telegram\",\"deal_value\":120000,\"created_at\":\"2026-08-08T10:00:00+03:00\",\"last_message_at\":\"2026-08-10T16:00:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-08T10:00:00+03:00\",\"text\":\"Можно интегрировать бота с нашей CRM?\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-08T10:20:00+03:00\",\"text\":\"Да, интеграция возможна.\"},{\"sender\":\"client\",\"timestamp\":\"2026-08-10T16:00:00+03:00\",\"text\":\"Когда сможете прислать детали? Пишу повторно.\"}]},{\"dialog_id\":\"D005\",\"lead_id\":\"L005\",\"client_name\":\"ООО Гамма\",\"manager_name\":\"Анна Смирнова\",\"manager_id\":\"M002\",\"source\":\"whatsapp\",\"deal_value\":65000,\"created_at\":\"2026-08-11T08:00:00+03:00\",\"last_message_at\":\"2026-08-11T09:00:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-11T08:00:00+03:00\",\"text\":\"Ваш менеджер третий раз переносит демонстрацию. Это неприемлемо.\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T09:00:00+03:00\",\"text\":\"Извините за неудобства.\"}]},{\"dialog_id\":\"D006\",\"lead_id\":\"L006\",\"client_name\":\"ИП Соколов\",\"manager_name\":\"Алексей Орлов\",\"manager_id\":\"M003\",\"source\":\"email\",\"deal_value\":null,\"created_at\":\"2026-08-11T13:00:00+03:00\",\"last_message_at\":\"2026-08-11T13:20:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-11T13:00:00+03:00\",\"text\":\"Просто изучаю решения для автоматизации, внедрение пока не планируем.\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T13:20:00+03:00\",\"text\":\"Понял. Могу отправить обзор возможностей на будущее.\"}]},{\"dialog_id\":\"D007\",\"lead_id\":\"L007\",\"client_name\":\"ООО Меридиан\",\"manager_name\":\"Иван Петров\",\"manager_id\":\"M001\",\"source\":\"telegram\",\"deal_value\":90000,\"created_at\":\"2026-08-07T10:00:00+03:00\",\"last_message_at\":\"2026-08-11T10:00:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-07T10:00:00+03:00\",\"text\":\"Нам интересен контроль качества звонков, вернёмся после совещания.\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T10:00:00+03:00\",\"text\":\"Добрый день! Удалось обсудить проект? Могу показать пилот во вторник в 15:00.\"}]},{\"dialog_id\":\"D008\",\"lead_id\":\"L008\",\"client_name\":\"ООО Спектр\",\"manager_name\":\"Анна Смирнова\",\"manager_id\":\"M002\",\"source\":\"whatsapp\",\"deal_value\":30000,\"created_at\":\"2026-08-11T09:00:00+03:00\",\"last_message_at\":\"2026-08-11T09:10:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-11T09:00:00+03:00\",\"text\":\"Хотим увеличить продажи. Что можете предложить?\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T09:10:00+03:00\",\"text\":\"У нас много решений, посмотрите сайт.\"}]},{\"dialog_id\":\"D009\",\"lead_id\":\"L009\",\"client_name\":\"АО Прогресс\",\"manager_name\":\"Алексей Орлов\",\"manager_id\":\"M003\",\"source\":\"email\",\"deal_value\":500000,\"created_at\":\"2026-08-11T11:00:00+03:00\",\"last_message_at\":\"2026-08-11T11:15:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-11T11:00:00+03:00\",\"text\":\"Решение подходит, бюджет согласован. Готовы начать работу на этой неделе.\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T11:15:00+03:00\",\"text\":\"Отлично. Сегодня до 17:00 направлю договор и назначу стартовую встречу на четверг.\"}]},{\"dialog_id\":\"D010\",\"lead_id\":\"L010\",\"client_name\":\"ООО Фактор\",\"manager_name\":\"Иван Петров\",\"manager_id\":\"M001\",\"source\":\"telegram\",\"deal_value\":120000,\"created_at\":\"2026-08-11T12:00:00+03:00\",\"last_message_at\":\"2026-08-11T12:30:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-11T12:00:00+03:00\",\"text\":\"120 тысяч для нас дорого. Есть более простой вариант?\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T12:30:00+03:00\",\"text\":\"Можно начать с пилота за 65 тысяч и масштабировать после проверки результата. Обсудим завтра?\"}]},{\"dialog_id\":\"D011\",\"lead_id\":\"L011\",\"client_name\":\"ООО Лидер\",\"manager_name\":\"Анна Смирнова\",\"manager_id\":\"M002\",\"source\":\"email\",\"deal_value\":250000,\"created_at\":\"2026-08-11T10:00:00+03:00\",\"last_message_at\":\"2026-08-11T10:05:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-11T10:00:00+03:00\",\"text\":\"Пришлите коммерческое предложение на внедрение AI-контроля продаж.\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T10:05:00+03:00\",\"text\":\"Хорошо, принято.\"}]},{\"dialog_id\":\"D012\",\"lead_id\":\"L012\",\"client_name\":\"ООО Горизонт\",\"manager_name\":\"Алексей Орлов\",\"manager_id\":\"M003\",\"source\":\"whatsapp\",\"deal_value\":180000,\"created_at\":\"2026-08-11T14:00:00+03:00\",\"last_message_at\":\"2026-08-11T14:30:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-11T14:00:00+03:00\",\"text\":\"Нужно анализировать 1000 диалогов в месяц. Какие сроки?\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T14:30:00+03:00\",\"text\":\"Обычно внедрение занимает 3–4 недели.\"}]},{\"dialog_id\":\"D013\",\"lead_id\":\"L013\",\"client_name\":\"АО Контур\",\"manager_name\":\"Иван Петров\",\"manager_id\":\"M001\",\"source\":\"email\",\"deal_value\":500000,\"created_at\":\"2026-08-10T10:00:00+03:00\",\"last_message_at\":\"2026-08-10T11:00:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-10T10:00:00+03:00\",\"text\":\"Конкурент предлагает дешевле. Чем ваше решение лучше?\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-10T11:00:00+03:00\",\"text\":\"Мы адаптируем критерии качества под ваш процесс и даём пилот с измеримыми KPI. Предлагаю сравнить на демо в среду.\"}]},{\"dialog_id\":\"D014\",\"lead_id\":\"L014\",\"client_name\":\"ООО Импульс\",\"manager_name\":\"Анна Смирнова\",\"manager_id\":\"M002\",\"source\":\"telegram\",\"deal_value\":120000,\"created_at\":\"2026-08-11T09:30:00+03:00\",\"last_message_at\":\"2026-08-11T09:45:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-11T09:30:00+03:00\",\"text\":\"Хотим назначить встречу с руководителем проекта на этой неделе.\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T09:45:00+03:00\",\"text\":\"Давайте в четверг в 16:00. Отправлю приглашение сегодня.\"}]},{\"dialog_id\":\"D015\",\"lead_id\":\"L015\",\"client_name\":\"Холдинг Восток\",\"manager_name\":\"Алексей Орлов\",\"manager_id\":\"M003\",\"source\":\"email\",\"deal_value\":900000,\"created_at\":\"2026-08-05T10:00:00+03:00\",\"last_message_at\":\"2026-08-05T11:00:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-05T10:00:00+03:00\",\"text\":\"Нужна система для 80 менеджеров. Бюджет до 900 тысяч, ждём план пилота.\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-05T11:00:00+03:00\",\"text\":\"Спасибо за информацию, подготовим.\"}]},{\"dialog_id\":\"D016\",\"lead_id\":\"L016\",\"client_name\":\"ООО Сфера\",\"manager_name\":\"Иван Петров\",\"manager_id\":\"M001\",\"source\":\"whatsapp\",\"deal_value\":65000,\"created_at\":\"2026-08-11T10:30:00+03:00\",\"last_message_at\":\"2026-08-11T10:45:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-11T10:30:00+03:00\",\"text\":\"За сколько дней можно запустить первую версию?\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T10:45:00+03:00\",\"text\":\"Пилот запускаем за 10 рабочих дней. Чтобы подтвердить срок, сегодня уточним объём интеграций на коротком звонке.\"}]},{\"dialog_id\":\"D017\",\"lead_id\":\"L017\",\"client_name\":\"ООО Право\",\"manager_name\":\"Анна Смирнова\",\"manager_id\":\"M002\",\"source\":\"email\",\"deal_value\":180000,\"created_at\":\"2026-08-11T11:00:00+03:00\",\"last_message_at\":\"2026-08-11T11:20:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-11T11:00:00+03:00\",\"text\":\"Какие условия договора и есть ли гарантия конфиденциальности?\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T11:20:00+03:00\",\"text\":\"Работаем по договору с NDA, данные хранятся изолированно. Сегодня направлю шаблоны документов.\"}]},{\"dialog_id\":\"D018\",\"lead_id\":\"L018\",\"client_name\":\"ООО Финанс\",\"manager_name\":\"Алексей Орлов\",\"manager_id\":\"M003\",\"source\":\"telegram\",\"deal_value\":250000,\"created_at\":\"2026-08-11T15:00:00+03:00\",\"last_message_at\":\"2026-08-11T15:20:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-11T15:00:00+03:00\",\"text\":\"Хотим обсудить оплату частями и выставление счёта.\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T15:20:00+03:00\",\"text\":\"Можно разбить оплату на 50% до старта и 50% после пилота. Финансовый менеджер позвонит вам завтра в 10:00.\"}]},{\"dialog_id\":\"D019\",\"lead_id\":\"L019\",\"client_name\":\"ИП Волков\",\"manager_name\":\"Иван Петров\",\"manager_id\":\"M001\",\"source\":\"whatsapp\",\"deal_value\":null,\"created_at\":\"2026-08-11T16:00:00+03:00\",\"last_message_at\":\"2026-08-11T16:10:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-11T16:00:00+03:00\",\"text\":\"Не понимаю, подойдёт ли продукт для небольшой команды из пяти человек.\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T16:10:00+03:00\",\"text\":\"Информация есть на сайте.\"}]},{\"dialog_id\":\"D020\",\"lead_id\":\"L020\",\"client_name\":\"Группа Статус\",\"manager_name\":\"Анна Смирнова\",\"manager_id\":\"M002\",\"source\":\"email\",\"deal_value\":900000,\"created_at\":\"2026-08-11T08:30:00+03:00\",\"last_message_at\":\"2026-08-11T10:00:00+03:00\",\"messages\":[{\"sender\":\"client\",\"timestamp\":\"2026-08-11T08:30:00+03:00\",\"text\":\"Нужен контроль 100 менеджеров, интеграция с телефонией и CRM. Рассматриваем запуск в сентябре.\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T09:00:00+03:00\",\"text\":\"Какие CRM и телефонию используете, сколько звонков в месяц и кто принимает решение?\"},{\"sender\":\"client\",\"timestamp\":\"2026-08-11T09:20:00+03:00\",\"text\":\"Bitrix24, Mango, 40 тысяч звонков. Решение принимает коммерческий директор.\"},{\"sender\":\"manager\",\"timestamp\":\"2026-08-11T10:00:00+03:00\",\"text\":\"Подготовим архитектуру и расчёт. В пятницу в 11:00 проведём встречу с коммерческим директором, приглашение уже отправил.\"}]}].map(d=>({json:d}));"
+      },
+      "notes": "Создаёт 20 реалистичных B2B-диалогов. На следующем этапе заменяется CRM-источником без изменения остальной логики."
+    },
+    {
+      "id": "b80b08fd-f224-4e7e-9d51-756ec6db384e",
+      "name": "Prepare Dialogue",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        650,
+        320
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const d=$json; const labels={client:'Клиент',manager:'Менеджер'}; const dialogue_text=(Array.isArray(d.messages)?d.messages:[]).map(m=>(labels[m.sender]||m.sender)+': '+m.text).join('\\n'); return {json:{...d,dialogue_text,analysis_context:{client_name:d.client_name,manager_name:d.manager_name,deal_value:d.deal_value,created_at:d.created_at,last_message_at:d.last_message_at}}};"
+      },
+      "notes": "Нормализует вход и превращает messages в строку диалога для AI, сохраняя все исходные поля."
+    },
+    {
+      "id": "f4a92750-4653-4b56-9edc-dd9a241e0fc2",
+      "name": "AI Sales Analysis",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        910,
+        320
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "=Проанализируй диалог.\\n\\nКлиент: {{ $json.client_name }}\\nМенеджер: {{ $json.manager_name }}\\nСтоимость: {{ $json.deal_value ?? \"не указана\" }}\\nСоздан: {{ $json.created_at }}\\nПоследнее сообщение: {{ $json.last_message_at }}\\n\\nПереписка:\\n{{ $json.dialogue_text }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "type": "SystemMessagePromptTemplate",
+              "message": "Ты AI Sales Quality Analyst. Анализируй только предоставленную переписку и не придумывай факты. Оцени коммерческий потенциал, качество менеджера и риск потери сделки. lead_temperature: hot — выраженный коммерческий интерес и готовность двигаться; warm — интерес без решения; cold — слабый или информационный интерес. lead_status: active, won, lost или risk_of_loss. risk_of_loss ставь при существенном риске: горячему клиенту не ответили, повторное сообщение, проигнорированы цена или КП, нет следующего шага или follow-up, негатив не обработан. manager_quality_score и lead_loss_risk_score — числа 0–100. recommended_action — конкретное действие. Если стоимость неизвестна, не придумывай её. Возвращай только данные по заданной структуре."
+            }
+          ]
+        },
+        "batching": {
+          "batchSize": 2,
+          "delayBetweenBatches": 500
+        }
+      },
+      "notes": "Оценивает намерение клиента, качество менеджера и риск потери. Ошибка отдельного item не останавливает весь workflow.",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "b6a227b2-8afb-46bd-8a0b-d50d3db3d51c",
+      "name": "Gemini via RouterAI",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        910,
+        540
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "google/gemini-2.5-flash",
+          "cachedResultName": "google/gemini-2.5-flash"
+        },
+        "responsesApiEnabled": false,
+        "options": {
+          "temperature": 0.1,
+          "maxRetries": 2,
+          "timeout": 120000
+        }
+      }
+    },
+    {
+      "id": "0950ee40-5f47-4e38-b234-ce1209f88f4f",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1120,
+        540
+      ],
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"lead_temperature\":{\"type\":\"string\",\"enum\":[\"hot\",\"warm\",\"cold\"]},\"lead_status\":{\"type\":\"string\",\"enum\":[\"active\",\"won\",\"lost\",\"risk_of_loss\"]},\"client_intent\":{\"type\":\"string\"},\"client_need\":{\"type\":\"string\"},\"purchase_signal\":{\"type\":\"boolean\"},\"price_requested\":{\"type\":\"boolean\"},\"commercial_offer_requested\":{\"type\":\"boolean\"},\"meeting_requested\":{\"type\":\"boolean\"},\"negative_sentiment\":{\"type\":\"boolean\"},\"manager_answered_questions\":{\"type\":\"boolean\"},\"manager_identified_need\":{\"type\":\"boolean\"},\"manager_proposed_next_step\":{\"type\":\"boolean\"},\"follow_up_required\":{\"type\":\"boolean\"},\"manager_quality_score\":{\"type\":\"number\",\"minimum\":0,\"maximum\":100},\"lead_loss_risk_score\":{\"type\":\"number\",\"minimum\":0,\"maximum\":100},\"problems\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"recommended_action\":{\"type\":\"string\"},\"summary\":{\"type\":\"string\"}},\"required\":[\"lead_temperature\",\"lead_status\",\"client_intent\",\"client_need\",\"purchase_signal\",\"price_requested\",\"commercial_offer_requested\",\"meeting_requested\",\"negative_sentiment\",\"manager_answered_questions\",\"manager_identified_need\",\"manager_proposed_next_step\",\"follow_up_required\",\"manager_quality_score\",\"lead_loss_risk_score\",\"problems\",\"recommended_action\",\"summary\"]}",
+        "autoFix": false
+      }
+    },
+    {
+      "id": "4120ba19-f003-43f8-b8f2-59341247bd99",
+      "name": "Rule-Based Risk Scoring",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1190,
+        320
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const original=$('Prepare Dialogue').item.json; let ai=$json.output??$json; if(typeof ai==='string'){try{ai=JSON.parse(ai);}catch(e){ai={};}} const clamp=v=>Math.max(0,Math.min(100,Number(v)||0)); const b=v=>v===true; const defaults={lead_temperature:'cold',lead_status:'active',client_intent:'Не определено',client_need:'Не определено',purchase_signal:false,price_requested:false,commercial_offer_requested:false,meeting_requested:false,negative_sentiment:false,manager_answered_questions:false,manager_identified_need:false,manager_proposed_next_step:false,follow_up_required:true,manager_quality_score:0,lead_loss_risk_score:50,problems:['AI-анализ не вернул полную структуру'],recommended_action:'Проверить диалог вручную и связаться с клиентом.',summary:'Требуется ручная проверка.'}; ai={...defaults,...ai}; const msgs=Array.isArray(original.messages)?original.messages:[]; let repeatedWithoutAnswer=false; for(let i=1;i<msgs.length;i++){if(msgs[i-1].sender==='client'&&msgs[i].sender==='client') repeatedWithoutAnswer=true;} let score=0; if(ai.lead_temperature==='hot'&&!b(ai.manager_proposed_next_step))score+=30; if(repeatedWithoutAnswer)score+=25; if(b(ai.price_requested)&&!b(ai.manager_answered_questions))score+=20; if(b(ai.commercial_offer_requested)&&!b(ai.manager_proposed_next_step))score+=25; if(b(ai.negative_sentiment))score+=20; if(!b(ai.manager_identified_need))score+=15; if(b(ai.follow_up_required))score+=15; return {json:{...original,...ai,purchase_signal:b(ai.purchase_signal),price_requested:b(ai.price_requested),commercial_offer_requested:b(ai.commercial_offer_requested),meeting_requested:b(ai.meeting_requested),negative_sentiment:b(ai.negative_sentiment),manager_answered_questions:b(ai.manager_answered_questions),manager_identified_need:b(ai.manager_identified_need),manager_proposed_next_step:b(ai.manager_proposed_next_step),follow_up_required:b(ai.follow_up_required),manager_quality_score:clamp(ai.manager_quality_score),ai_risk_score:clamp(ai.lead_loss_risk_score),rule_risk_score:Math.min(score,100),repeated_client_message_without_answer:repeatedWithoutAnswer}};"
+      },
+      "notes": "Независимо от AI рассчитывает rule_risk_score по явным бизнес-правилам и защищает типы данных."
+    },
+    {
+      "id": "a2d37420-179d-4ce8-8aba-a31d56a251d1",
+      "name": "Calculate Final Risk",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1450,
+        320
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const d=$json; const final_risk_score=Math.max(0,Math.min(100,Math.round(d.ai_risk_score*0.6+d.rule_risk_score*0.4))); const known=typeof d.deal_value==='number'&&Number.isFinite(d.deal_value); const potential_lost_revenue=((d.lead_status==='risk_of_loss'||final_risk_score>=70)&&known)?d.deal_value:0; const is_critical=final_risk_score>=70||(d.lead_temperature==='hot'&&d.follow_up_required===true)||d.negative_sentiment===true; return {json:{...d,final_risk_score,potential_lost_revenue,is_critical}};"
+      },
+      "notes": "Смешивает AI и rule score 60/40, считает потенциально потерянную выручку и признак критичности."
+    },
+    {
+      "id": "0edd7606-eced-499a-af2c-d76cb9b50428",
+      "name": "Prepare Analysis Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1710,
+        320
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const d=$json; return {json:{dialog_id:d.dialog_id,lead_id:d.lead_id,client_name:d.client_name,manager_name:d.manager_name,manager_id:d.manager_id,source:d.source,deal_value:d.deal_value,created_at:d.created_at,last_message_at:d.last_message_at,messages:d.messages,lead_temperature:d.lead_temperature,lead_status:d.lead_status,client_intent:d.client_intent,client_need:d.client_need,purchase_signal:d.purchase_signal,price_requested:d.price_requested,commercial_offer_requested:d.commercial_offer_requested,meeting_requested:d.meeting_requested,negative_sentiment:d.negative_sentiment,manager_answered_questions:d.manager_answered_questions,manager_identified_need:d.manager_identified_need,manager_proposed_next_step:d.manager_proposed_next_step,follow_up_required:d.follow_up_required,manager_quality_score:d.manager_quality_score,ai_risk_score:d.ai_risk_score,rule_risk_score:d.rule_risk_score,final_risk_score:d.final_risk_score,problems:Array.isArray(d.problems)?d.problems:[],recommended_action:d.recommended_action,summary:d.summary,potential_lost_revenue:d.potential_lost_revenue,is_critical:d.is_critical,repeated_client_message_without_answer:d.repeated_client_message_without_answer}};"
+      },
+      "notes": "Возвращает нормализованный результат анализа вместе с идентификаторами и исходными полями."
+    },
+    {
+      "id": "df1e6fad-7467-4f38-88b9-bd1d37a0698a",
+      "name": "Is Critical Lead?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1960,
+        320
+      ],
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.is_critical }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": false,
+        "options": {
+          "ignoreCase": true
+        }
+      }
+    },
+    {
+      "id": "15b120c1-96d6-441d-9029-40ca808ce539",
+      "name": "Execute Critical Alert",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        2200,
+        320
+      ],
+      "parameters": {
+        "mode": "each",
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "__CONFIGURE_WORKFLOW_ID__",
+          "cachedResultName": "Configure the target workflow"
+        },
+        "workflowInputs": {
+          "mappingMode": "passthrough",
+          "value": null
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "notes": "Передаёт каждый критический лид в отдельный workflow уведомлений."
+    },
+    {
+      "id": "0dbdc0e1-c84e-4063-9e99-ae76f3881813",
+      "name": "Run Analysis as Sub-workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        440
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Generate Test Dialogues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Test Dialogues": {
+      "main": [
+        [
+          {
+            "node": "Prepare Dialogue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Dialogue": {
+      "main": [
+        [
+          {
+            "node": "AI Sales Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Sales Analysis": {
+      "main": [
+        [
+          {
+            "node": "Rule-Based Risk Scoring",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini via RouterAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Sales Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Sales Analysis",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rule-Based Risk Scoring": {
+      "main": [
+        [
+          {
+            "node": "Calculate Final Risk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Final Risk": {
+      "main": [
+        [
+          {
+            "node": "Prepare Analysis Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Analysis Result": {
+      "main": [
+        [
+          {
+            "node": "Is Critical Lead?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Critical Lead?": {
+      "main": [
+        [
+          {
+            "node": "Execute Critical Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Analysis as Sub-workflow": {
+      "main": [
+        [
+          {
+            "node": "Generate Test Dialogues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "active": false
+}

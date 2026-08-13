@@ -1,0 +1,107 @@
+{
+  "name": "AI Sales Monitor — Daily Director Report",
+  "nodes": [
+    {
+      "id": "929d465d-7d45-4a29-a89b-6e029c81073a",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        160,
+        300
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "8cb00a09-71f9-4505-aa53-ce8d120fce07",
+      "name": "Calculate Daily KPIs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const metrics={new_leads:1,hot_leads:1,warm_leads:0,cold_leads:0,average_first_response_minutes:null,sla_compliance_percent:0,sla_warnings:0,sla_breaches:1,critical_sla_breaches:0,followups_required:1,negative_dialogues:0,critical_leads:1,potential_lost_revenue:250000,average_manager_quality_score:0,average_risk_score:92,crm_tasks_recommended:1}; const managers=[{manager_name:'Анна Смирнова',assigned_leads:1,hot_leads:1,average_first_response_minutes:null,sla_compliance_percent:0,sla_breaches:1,critical_leads:1,average_quality_score:0,average_risk_score:92,followups_required:1,potential_lost_revenue:250000}]; return [{json:{metrics,manager_statistics:managers,events:[{event_type:'new_lead',deal_id:'DEMO-DEAL-000000000'},{event_type:'sla_breach',deal_id:'DEMO-DEAL-SLA-001'}]}}];"
+      },
+      "notes": "Агрегирует demo сделки и SLA events; заменяется чтением Data Table/Bitrix при production подключении."
+    },
+    {
+      "id": "8fbce763-117d-4857-9427-0fd03be959b3",
+      "name": "Format Director Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const d=$json; const m=d.metrics; const money=v=>new Intl.NumberFormat('ru-RU').format(v)+' ₽'; const managers=(d.manager_statistics||[]).map(x=>x.manager_name+'\\nЛидов: '+x.assigned_leads+' | SLA: '+x.sla_compliance_percent+'% | Quality: '+x.average_quality_score+'/100').join('\\n\\n'); const report='📊 AI-отчёт отдела продаж\\n12 августа 2026\\n\\n👥 Новых лидов: '+m.new_leads+'\\n🔥 HOT: '+m.hot_leads+'\\n🟡 WARM: '+m.warm_leads+'\\n❄️ COLD: '+m.cold_leads+'\\n\\n⏱ Среднее время первого ответа: не определено\\n✅ SLA: '+m.sla_compliance_percent+'%\\n⚠️ Нарушений SLA: '+m.sla_breaches+'\\n🚨 Критических: '+m.critical_leads+'\\n📞 Follow-up: '+m.followups_required+'\\n💸 Потенциальная потеря: '+money(m.potential_lost_revenue)+'\\n\\n👥 По менеджерам\\n'+managers+'\\n\\n🎯 Что требует внимания: отработать SLA breach и выполнить follow-up по критическому лиду.'; return {json:{...d,director_report:report}};"
+      },
+      "notes": "Формирует короткий отчёт без фиктивного first response time: unresolved остаётся null."
+    },
+    {
+      "id": "a216e99c-f4ee-4f1d-b86d-b3cf221628d7",
+      "name": "Send Director Report",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1140,
+        300
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "__CONFIGURE_TELEGRAM_CHAT_ID__",
+        "text": "={{ $json.director_report }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Calculate Daily KPIs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Daily KPIs": {
+      "main": [
+        [
+          {
+            "node": "Format Director Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Director Report": {
+      "main": [
+        [
+          {
+            "node": "Send Director Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "active": false
+}

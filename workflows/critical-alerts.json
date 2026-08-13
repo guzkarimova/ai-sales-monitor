@@ -1,0 +1,134 @@
+{
+  "name": "AI Sales Monitor — Critical Alerts",
+  "nodes": [
+    {
+      "id": "1c9c952c-2618-46b5-a1a9-47035595f23e",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        200,
+        180
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "8c64849b-083f-4119-856d-dc5c58cb610c",
+      "name": "Generate Test Critical Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        180
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return [{json:{dialog_id:'D002',lead_id:'L002',client_name:'ООО Бета',manager_name:'Анна Смирнова',deal_value:500000,lead_temperature:'hot',final_risk_score:88,problems:['Горячему клиенту не ответили','Следующий шаг не предложен','Требуется follow-up'],recommended_action:'Связаться с клиентом сегодня, ответить на запрос стоимости и предложить 20-минутный созвон.',is_critical:true}}];"
+      },
+      "notes": "Создаёт один тестовый критический лид для проверки текста уведомления без CRM."
+    },
+    {
+      "id": "7920da63-0a60-43f6-b5a1-f469532fc68d",
+      "name": "Format Telegram Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const d=$json; const money=typeof d.deal_value==='number'?new Intl.NumberFormat('ru-RU').format(d.deal_value)+' ₽':'не указан'; const problems=Array.isArray(d.problems)&&d.problems.length?d.problems.map(p=>'• '+p).join('\\n'):'• Высокий риск потери сделки'; const telegram_message='🚨 Потенциально потерянный лид\\n\\n👤 Клиент: '+(d.client_name||'не указан')+'\\n💼 Менеджер: '+(d.manager_name||'не указан')+'\\n💰 Потенциал сделки: '+money+'\\n\\n🔥 Температура: '+String(d.lead_temperature||'unknown').toUpperCase()+'\\n⚠️ Риск потери: '+Math.max(0,Math.min(100,Number(d.final_risk_score)||0))+'/100\\n\\nПричина:\\n'+problems+'\\n\\n🎯 Что сделать:\\n'+(d.recommended_action||'Связаться с клиентом и определить следующий шаг.'); return {json:{...d,telegram_message}};"
+      },
+      "notes": "Формирует понятное руководителю Telegram-сообщение только из данных критического лида."
+    },
+    {
+      "id": "12f61fc7-4608-4628-9904-1ad8bce8a811",
+      "name": "Send Telegram Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "__CONFIGURE_TELEGRAM_CHAT_ID__",
+        "text": "={{ $json.telegram_message }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "disabled": false,
+      "notes": "Отключён до указания chat ID руководителя. Credential Telegram уже привязан."
+    },
+    {
+      "id": "1d75bb30-f095-4c21-8b03-03bdaf62e4da",
+      "name": "Receive Critical Lead",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        380
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Generate Test Critical Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Test Critical Lead": {
+      "main": [
+        [
+          {
+            "node": "Format Telegram Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Telegram Alert": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive Critical Lead": {
+      "main": [
+        [
+          {
+            "node": "Format Telegram Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "active": false
+}

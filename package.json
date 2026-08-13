@@ -4,8 +4,7 @@
   "private": true,
   "description": "Interactive CRM demo for AI-assisted sales monitoring",
   "scripts": {
-    "check": "node --check app.js && node --check config.js && node --check data.js && node --test"
+    "check": "node --check app.js && node --check config.js && node --check data.js && node --check scripts/sanitize-n8n-exports.mjs && node --test"
   },
   "license": "MIT"
 }
-
